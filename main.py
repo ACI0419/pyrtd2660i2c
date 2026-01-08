@@ -1,4 +1,4 @@
-from smbus import SMBus
+from smbus2 import SMBus
 import time
 import os
 import crc
@@ -6,7 +6,7 @@ import sys
 import array
 
 print "Opening bus..."
-bus = SMBus(7) # choose your bus 7 for usb tiny i2c
+bus = SMBus(2) # choose bus 2 for HDMI
 
 E_CC_NOOP = 0
 E_CC_WRITE = 1
@@ -49,6 +49,7 @@ FlashDevices = [
     FlashDesc("W25X20"     , 0xEF3012,      256,       256, 64),
     FlashDesc("W25X40"     , 0xEF3013,      512,       256, 64),
     FlashDesc("W25X80"     , 0xEF3014, 1 * 1024,       256, 64),
+    FlashDesc("W25Q16"     , 0X5E6014, 2 * 1024,       256, 64),
     # Manufacturer: Macronix 
     FlashDesc("MX25L512"   , 0xC22010,       64,       256, 64),
     FlashDesc("MX25L3205"  , 0xC22016, 4 * 1024,       256, 64),
@@ -136,7 +137,7 @@ def SPIRead( address, data, len):
 def SetupChipCommands(jedec_id):
     # uint8_t manufacturer_id = GetManufacturerId(jedec_id);
     manufacturer_id = GetManufacturerId(jedec_id)
-    if manufacturer_id == 0xEF:
+    if manufacturer_id == 0xEF or manufacturer_id == 0x5E:
         # These are the codes for Winbond
         bus.write_i2c_block_data(0x4a,0x62, [0x6])  # Flash Write enable op code
         bus.write_i2c_block_data(0x4a,0x63, [0x50]) # Flash Write register op code
@@ -374,7 +375,7 @@ print "JEDEC ID: 0x{:02X}\n".format(jedec_id);
 chip = FindChip(jedec_id);
 
 
-if jedec_id == 15675411:
+if jedec_id == 0X5E6014:
     print "flash matches!"
 else:
     print "what is this flash chip?"
@@ -400,8 +401,8 @@ ticks = time.time()
 filenam= sys.argv[1]
 
 #uncomment here to read firmware to file (dump)
-#print "Saving controller flash to \"{0}\"".format(os.path.abspath(filenam))
-#SaveFlash(filenam, chip.size_kb * 1024) # 4tenie
+print "Saving controller flash to \"{0}\"".format(os.path.abspath(filenam))
+SaveFlash(filenam, chip.size_kb * 1024) # 4tenie
 
 #uncomment here to program chip
 #print "Flashing \"{0}\" to controller".format(os.path.abspath(filenam))
