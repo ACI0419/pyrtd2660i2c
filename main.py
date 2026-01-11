@@ -50,6 +50,7 @@ FlashDevices = [
     FlashDesc("W25X40"     , 0xEF3013,      512,       256, 64),
     FlashDesc("W25X80"     , 0xEF3014, 1 * 1024,       256, 64),
     FlashDesc("W25Q16"     , 0X5E6014, 2 * 1024,       256, 64),
+    FlashDesc("P25Q80"     , 0X856014, 2 * 1024,       256, 64),
     # Manufacturer: Macronix 
     FlashDesc("MX25L512"   , 0xC22010,       64,       256, 64),
     FlashDesc("MX25L3205"  , 0xC22016, 4 * 1024,       256, 64),
@@ -137,7 +138,7 @@ def SPIRead( address, data, len):
 def SetupChipCommands(jedec_id):
     # uint8_t manufacturer_id = GetManufacturerId(jedec_id);
     manufacturer_id = GetManufacturerId(jedec_id)
-    if manufacturer_id == 0xEF or manufacturer_id == 0x5E:
+    if True:
         # These are the codes for Winbond
         bus.write_i2c_block_data(0x4a,0x62, [0x6])  # Flash Write enable op code
         bus.write_i2c_block_data(0x4a,0x63, [0x50]) # Flash Write register op code
@@ -375,11 +376,11 @@ print "JEDEC ID: 0x{:02X}\n".format(jedec_id);
 chip = FindChip(jedec_id);
 
 
-if jedec_id == 0X5E6014:
-    print "flash matches!"
-else:
-    print "what is this flash chip?"
-    exit(0)
+# if jedec_id == 0X5E6014:
+#     print "flash matches!"
+# else:
+#     print "what is this flash chip?"
+#     exit(0)
 
 
 print "Manufacturer "
